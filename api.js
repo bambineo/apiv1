@@ -1,4 +1,5 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 
 var mysql = require('mysql');
@@ -23,6 +24,22 @@ app.all('*', function(req, res, next) {
     }
 });
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
+app.post('/cd', function (req, res) {
+  var body = req.body;
+  var titel = 'was soll das';
+  var jahr = body.jahr;
+  var interpret = body.interpret;
+  console.log(titel + ' ' + jahr + ' ' + interpret);
+  connection.query('INSERT INTO cds (titel, interpret, jahr) VALUES (?, ?, ?)', [titel, interpret, jahr], function (err, rows, fields) {
+    //if (err) throw err
+    res.send(rows);
+  })
+
+})
+
 app.get('/cds', function(req, res, next) {
 
   connection.query('SELECT * FROM cdcol.cds', function (err, rows, fields) {
@@ -41,10 +58,7 @@ app.get('/cd/:id', function(req, res, next) {
 
 });
 
-app.post('/cd', function (req, res) {
-  var body = req.body;
-  console.log(body);
-})
+
 
 app.put('/cd/:id', function (req, res) {
   res.send('Got a PUT request at /user')
